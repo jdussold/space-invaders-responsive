@@ -6,7 +6,7 @@ class Grid {
     };
 
     this.velocity = {
-      x: 3 * gridSpeedModifier,
+      x: 2 * gridSpeedModifier,
       y: 0,
     };
 
