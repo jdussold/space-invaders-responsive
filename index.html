@@ -47,6 +47,8 @@
 
   #startButton,
   #restartButton {
+    display: flex;
+    justify-content: center;
     cursor: pointer;
     position: relative;
     margin-top: 20px;
@@ -59,7 +61,6 @@
       position: absolute;
       z-index: 1;
       color: white;
-      margin-left: 20px;
       margin-top: 20px;
       display: none;
     "
@@ -108,7 +109,11 @@
         flex-direction: column;
       "
     >
-      <img src="./img/gameOverText.png" alt="Game Over" style="width: 60%" />
+      <img
+        src="./img/gameOverText.png"
+        alt="Game Over"
+        style="width: 60%; margin-bottom: -2%"
+      />
       <h1
         id="finalScore"
         style="
