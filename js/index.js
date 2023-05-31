@@ -3,6 +3,10 @@ const scoreEL = document.querySelector("#scoreEL");
 const canvas = document.querySelector("canvas");
 const c = canvas.getContext("2d");
 
+// Setting canvas width and height
+canvas.width = 1024;
+canvas.height = 576;
+
 // Creating instances of various classes
 let player = new Player();
 let projectiles = [];
@@ -22,10 +26,13 @@ let keys = {
   space: {
     pressed: false,
   },
-  ArrowLeft: {
+  touchLeft: {
     pressed: false,
   },
-  ArrowRight: {
+  touchRight: {
+    pressed: false,
+  },
+  touchShoot: {
     pressed: false,
   },
 };
@@ -42,17 +49,12 @@ let fpsInterval = 1000 / fps;
 let msPrev = window.performance.now();
 
 function init() {
-  const screenWidth = window.innerWidth;
-  const screenHeight = window.innerHeight;
-  canvas.width = screenWidth;
-  canvas.height = screenHeight;
   player = new Player();
   projectiles = [];
   grids = [];
   invaderProjectiles = [];
   particles = [];
   gridSpeedModifier = 1;
-
   keys = {
     a: {
       pressed: false,
@@ -61,6 +63,15 @@ function init() {
       pressed: false,
     },
     space: {
+      pressed: false,
+    },
+    touchLeft: {
+      pressed: false,
+    },
+    touchRight: {
+      pressed: false,
+    },
+    touchShoot: {
       pressed: false,
     },
   };
@@ -334,11 +345,11 @@ function animate() {
   });
 
   // Handling player movements based on key presses
-  if (keys.a.pressed && player.position.x >= 0) {
+  if ((keys.a.pressed || keys.touchLeft.pressed) && player.position.x >= 0) {
     player.velocity.x = -5;
     player.rotation = -0.25;
   } else if (
-    keys.d.pressed &&
+    (keys.d.pressed || keys.touchRight.pressed) &&
     player.position.x + player.width <= canvas.width
   ) {
     player.velocity.x = 5;
@@ -425,3 +436,76 @@ addEventListener("keyup", ({ key }) => {
       break;
   }
 });
+
+// Touch event listeners
+let touchTimer = null;
+
+// Touch event listeners
+canvas.addEventListener("touchstart", (event) => {
+  if (!game.active || game.over) return;
+  event.preventDefault();
+  const { pageX } = event.touches[0];
+
+  touchTimer = setTimeout(() => {
+    // On long press, move the player
+    if (pageX < canvas.width / 2) {
+      keys.touchLeft.pressed = true;
+    } else {
+      keys.touchRight.pressed = true;
+    }
+    touchTimer = null;
+  }, 200); // 200ms delay to distinguish between tap and long press
+
+  // Shoot immediately on touch start
+  handleTouchShoot();
+});
+
+canvas.addEventListener("touchend", (event) => {
+  if (!game.active || game.over) return;
+  event.preventDefault();
+
+  // If touchTimer is still valid, it was a quick tap for shooting
+  if (touchTimer) {
+    clearTimeout(touchTimer);
+    touchTimer = null;
+  } else {
+    // Otherwise, it was a long press for moving
+    keys.touchLeft.pressed = false;
+    keys.touchRight.pressed = false;
+  }
+
+  keys.touchShoot.pressed = false; // Reset the touchShoot property
+});
+
+canvas.addEventListener("touchmove", (event) => {
+  if (!game.active || game.over) return;
+  event.preventDefault();
+});
+
+canvas.addEventListener("touchcancel", (event) => {
+  if (!game.active || game.over) return;
+  event.preventDefault();
+  keys.touchLeft.pressed = false;
+  keys.touchRight.pressed = false;
+  keys.touchShoot.pressed = false; // Reset the touchShoot property
+});
+
+// Function to handle touch events and perform shooting action
+function handleTouchShoot() {
+  if (!keys.touchShoot.pressed) {
+    keys.touchShoot.pressed = true;
+    audio.shoot.play();
+    projectiles.push(
+      new Projectile({
+        position: {
+          x: player.position.x + player.width / 2,
+          y: player.position.y,
+        },
+        velocity: {
+          x: 0,
+          y: -5,
+        },
+      })
+    );
+  }
+}
