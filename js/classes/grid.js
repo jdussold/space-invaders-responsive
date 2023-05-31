@@ -16,8 +16,8 @@ class Grid {
 
   // Generate invaders randomly within a grid
   generateInvaders() {
-    const columns = Math.floor(Math.random() * 10 + 5);
-    const rows = Math.floor(Math.random() * 5 + 1);
+    const columns = Math.floor(Math.random() * 5 + 5);
+    const rows = Math.floor(Math.random() * 3 + 1);
 
     this.width = columns * 45 - 20;
     for (let x = 0; x < columns; x++) {
