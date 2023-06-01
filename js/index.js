@@ -3,10 +3,6 @@ const scoreEL = document.querySelector("#scoreEL");
 const canvas = document.querySelector("canvas");
 const c = canvas.getContext("2d");
 
-// Setting canvas width and height
-canvas.width = 1024;
-canvas.height = 576;
-
 // Creating instances of various classes
 let player = new Player();
 let projectiles = [];
@@ -26,7 +22,13 @@ let keys = {
   space: {
     pressed: false,
   },
+  ArrowLeft: {
+    pressed: false,
+  },
   touchLeft: {
+    pressed: false,
+  },
+  ArrowRight: {
     pressed: false,
   },
   touchRight: {
@@ -49,6 +51,10 @@ let fpsInterval = 1000 / fps;
 let msPrev = window.performance.now();
 
 function init() {
+  const screenWidth = window.innerWidth;
+  const screenHeight = window.innerHeight;
+  canvas.width = screenWidth;
+  canvas.height = screenHeight;
   player = new Player();
   projectiles = [];
   grids = [];
